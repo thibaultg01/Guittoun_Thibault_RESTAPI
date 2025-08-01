@@ -1,8 +1,10 @@
 package com.nnk.springboot.controllers;
 
+import java.security.Principal;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.nnk.springboot.model.BidList;
+import com.nnk.springboot.model.User;
+import com.nnk.springboot.security.CustomUserDetails;
 import com.nnk.springboot.service.BidListService;
 
 import jakarta.validation.Valid;
@@ -25,7 +29,8 @@ public class BidListController {
 	}
 
 	@GetMapping("/list")
-	public String listBidLists(Model model) {
+	public String listBidLists(Model model, @AuthenticationPrincipal CustomUserDetails user) {
+		model.addAttribute("username", user.getUsername());
 		model.addAttribute("bidLists", bidListService.findAll());
 		return "bidList/list";
 	}

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" 
-	  xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="utf-8"/>
 <title>Home</title>
@@ -15,12 +16,15 @@
 			<a href="/rating/list">Ratings</a>&nbsp;|&nbsp;
 			<a href="/trade/list">Trade</a>&nbsp;|&nbsp;
 			<a href="/ruleName/list">Rule</a>
+			<li sec:authorize="hasRole('ADMIN')">
+			    <a href="/user/list">User Management</a>
+			</li>
 		</div>
-		<div class="col-6 text-right">
-			Logged in user: <b th:inline="text"  class="user"> [[${#httpServletRequest != null ? #httpServletRequest.remoteUser : 'Guest'}]] </b>
-			<form th:action="@{/app-logout}" method="POST">
-				<input type="submit" value="Logout"/>
-			</form>
+		<div class="col-6 text-right" th:if="${username != null}">
+		    Logged in user: <b th:text="${username}">user</b>
+		    <form th:action="@{/logout}" method="post" style="display:inline;">
+		        <input type="submit" value="Logout" class="btn btn-link btn-sm" />
+		    </form>
 		</div>
 	</div>
 	<div class="row"><h2>Bid List</h2></div>
@@ -42,10 +46,10 @@
 					<td th:text="${bidList.account}"></td>
 					<td th:text="${bidList.type}"></td>
 					<td th:text="${bidList.bidQuantity}"></td>
-					<td style="width: 15%" class="text-center">
-						<a th:href="@{/bidList/update/{id}(id=${bidList.bidListId})}">Edit</a>&nbsp;|&nbsp;
-						<a th:href="@{/bidList/delete/{id}(id=${bidList.bidListId})}">Delete</a>
-					</td>
+					<td class="text-center">
+											<a th:href="@{/bidList/update/{id}(id=${bidList.bidListId})}">Edit</a>&nbsp;|&nbsp;
+											<a th:href="@{/bidList/delete/{id}(id=${bidList.bidListId})}">Delete</a>
+										</td>
 				</tr>
 			</tbody>
 		</table>

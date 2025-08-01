@@ -2,6 +2,7 @@ package com.nnk.springboot.controller;
 
 import com.nnk.springboot.controllers.RuleNameController;
 import com.nnk.springboot.model.RuleName;
+import com.nnk.springboot.security.CustomUserDetails;
 import com.nnk.springboot.service.RuleNameService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,11 +42,15 @@ class RuleNameControllerTest {
     @Test
     void listRuleNames_ShouldAddListToModel_AndReturnListView() {
         List<RuleName> ruleNames = Arrays.asList(ruleName);
+        CustomUserDetails mockUser = mock(CustomUserDetails.class);
+        when(mockUser.getUsername()).thenReturn("admin");
+
         when(ruleNameService.findAll()).thenReturn(ruleNames);
 
-        String viewName = ruleNameController.listRuleNames(model);
+        String viewName = ruleNameController.listRuleNames(model, mockUser);
 
-        verify(model, times(1)).addAttribute("ruleNames", ruleNames);
+        verify(model).addAttribute("username", "admin");
+        verify(model).addAttribute("ruleNames", ruleNames);
         assertEquals("ruleName/list", viewName);
     }
 

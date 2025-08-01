@@ -15,13 +15,16 @@
 			<a href="/rating/list">Ratings</a>&nbsp;|&nbsp;
 			<a href="/trade/list">Trade</a>&nbsp;|&nbsp;
 			<a href="/trade/list">Rule</a>
+			<li sec:authorize="hasRole('ADMIN')">
+			    <a href="/user/list">User Management</a>
+			</li>
 		</div>
-		<div class="col-6 text-right">
-			Logged in user: <b th:inline="text"  class="user"> [[${#httpServletRequest != null ? #httpServletRequest.remoteUser : 'Guest'}]] </b>
-			<form th:action="@{/app-logout}" method="POST">
-				<input type="submit" value="Logout"/>
-			</form>
-		</div>
+		<div class="col-6 text-right" th:if="${username != null}">
+				    Logged in user: <b th:text="${username}">user</b>
+				    <form th:action="@{/logout}" method="post" style="display:inline;">
+				        <input type="submit" value="Logout" class="btn btn-link btn-sm" />
+				    </form>
+				</div>
 	</div>
 	<div class="row"><h2>Trade List</h2></div>
 	<div class="row">

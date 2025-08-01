@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 
 import com.nnk.springboot.controllers.TradeController;
 import com.nnk.springboot.model.Trade;
+import com.nnk.springboot.security.CustomUserDetails;
 import com.nnk.springboot.service.TradeService;
 
 import java.util.Arrays;
@@ -41,12 +42,16 @@ class TradeControllerTest {
 
 	@Test
 	void listTrades_shouldReturnListView() {
-		when(tradeService.findAll()).thenReturn(Arrays.asList(trade));
+	    CustomUserDetails mockUser = mock(CustomUserDetails.class);
+	    when(mockUser.getUsername()).thenReturn("admin");
 
-		String viewName = tradeController.listTrades(model);
+	    when(tradeService.findAll()).thenReturn(Arrays.asList(trade));
 
-		verify(model, times(1)).addAttribute(eq("trades"), any());
-		assertEquals("trade/list", viewName);
+	    String viewName = tradeController.listTrades(model, mockUser);
+
+	    verify(model).addAttribute("username", "admin");
+	    verify(model).addAttribute(eq("trades"), any());
+	    assertEquals("trade/list", viewName);
 	}
 
 	@Test

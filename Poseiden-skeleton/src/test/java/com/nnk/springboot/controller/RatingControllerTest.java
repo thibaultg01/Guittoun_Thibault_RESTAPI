@@ -3,14 +3,21 @@ package com.nnk.springboot.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.nnk.springboot.controllers.RatingController;
 import com.nnk.springboot.model.Rating;
+import com.nnk.springboot.security.CustomUserDetails;
 import com.nnk.springboot.service.RatingService;
 
+import org.springframework.ui.Model;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -22,23 +29,32 @@ class RatingControllerTest {
     private RatingService ratingService;
     private RatingController ratingController;
     private MockMvc mockMvc;
+    private Model model;
+
+    private Rating rating;
 
     @BeforeEach
     void setUp() {
         ratingService = mock(RatingService.class);
         ratingController = new RatingController(ratingService);
         mockMvc = MockMvcBuilders.standaloneSetup(ratingController).build();
+        model = mock(Model.class);
     }
 
     @Test
-    void testListRatings() throws Exception {
-        when(ratingService.findAll()).thenReturn(Collections.emptyList());
+    void listRatings_ShouldAddListToModel_AndReturnListView() {
+    	Rating rating = new Rating();
+        List<Rating> ratings = Arrays.asList(rating);
+        CustomUserDetails mockUser = mock(CustomUserDetails.class);
+        when(mockUser.getUsername()).thenReturn("admin");
 
-        mockMvc.perform(get("/rating/list"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("rating/list"));
+        when(ratingService.findAll()).thenReturn(ratings);
 
-        verify(ratingService, times(1)).findAll();
+        String viewName = ratingController.listRatings(model, mockUser);
+
+        verify(model).addAttribute("username", "admin");
+        verify(model).addAttribute("ratings", ratings);
+        assertEquals("rating/list", viewName);
     }
 
     @Test

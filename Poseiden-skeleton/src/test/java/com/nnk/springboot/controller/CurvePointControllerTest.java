@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 
 import com.nnk.springboot.controllers.CurvePointController;
 import com.nnk.springboot.model.CurvePoint;
+import com.nnk.springboot.security.CustomUserDetails;
 import com.nnk.springboot.service.CurvePointService;
 
 import java.sql.Timestamp;
@@ -45,11 +46,15 @@ class CurvePointControllerTest {
 
     @Test
     void listCurvePoints_shouldReturnListView() {
+        CustomUserDetails mockUser = mock(CustomUserDetails.class);
+        when(mockUser.getUsername()).thenReturn("admin");
+
         when(curvePointService.findAll()).thenReturn(Arrays.asList(curvePoint));
 
-        String view = curvePointController.listCurvePoints(model);
+        String view = curvePointController.listCurvePoints(model, mockUser);
 
-        verify(model, times(1)).addAttribute(eq("curvePoints"), any());
+        verify(model).addAttribute("username", "admin");
+        verify(model).addAttribute(eq("curvePoints"), any());
         assertEquals("curvePoint/list", view);
     }
 

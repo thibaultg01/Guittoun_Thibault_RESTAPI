@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 
 import com.nnk.springboot.controllers.BidListController;
 import com.nnk.springboot.model.BidList;
+import com.nnk.springboot.security.CustomUserDetails;
 import com.nnk.springboot.service.BidListService;
 
 import java.sql.Timestamp;
@@ -43,11 +44,14 @@ class BidListControllerTest {
 
     @Test
     void listBidLists_shouldReturnListView() {
+        CustomUserDetails mockUser = mock(CustomUserDetails.class);
+        when(mockUser.getUsername()).thenReturn("admin");
         when(bidListService.findAll()).thenReturn(Arrays.asList(bidList));
 
-        String view = bidListController.listBidLists(model);
+        String view = bidListController.listBidLists(model, mockUser);
 
-        verify(model, times(1)).addAttribute(eq("bidLists"), any());
+        verify(model).addAttribute("username", "admin");
+        verify(model).addAttribute(eq("bidLists"), any());
         assertEquals("bidList/list", view);
     }
 
