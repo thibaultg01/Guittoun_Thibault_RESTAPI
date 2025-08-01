@@ -9,13 +9,23 @@
 <body>
 <div class="container">
 	<div class="row">
-		<div class="col-6">
-
+			<div class="col-6">
+				<a href="/bidList/list">Bid List</a>&nbsp;|&nbsp;
+				<a href="/curvePoint/list">Curve Points</a>&nbsp;|&nbsp;
+				<a href="/rating/list">Ratings</a>&nbsp;|&nbsp;
+				<a href="/trade/list">Trade</a>&nbsp;|&nbsp;
+				<a href="/trade/list">Rule</a>
+				<li sec:authorize="hasRole('ADMIN')">
+				    <a href="/user/list">User Management</a>
+				</li>
+			</div>
+			<div class="col-6 text-right" th:if="${username != null}">
+					    Logged in user: <b th:text="${username}">user</b>
+					    <form th:action="@{/logout}" method="post" style="display:inline;">
+					        <input type="submit" value="Logout" class="btn btn-link btn-sm" />
+					    </form>
+					</div>
 		</div>
-		<div class="col-6 text-right">
-			<a href="/">Home</a>&nbsp;|&nbsp;<a href="/login">Login</a>
-		</div>
-	</div>
 	<div class="row"><h2>User List</h2></div>
 	<div class="row">
 		<a href="/user/add" class="btn btn-primary btn-sm">Add New</a>
