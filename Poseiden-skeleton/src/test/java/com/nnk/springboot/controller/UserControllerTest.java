@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 
 import com.nnk.springboot.controllers.UserController;
 import com.nnk.springboot.model.User;
@@ -28,6 +29,9 @@ class UserControllerTest {
 
     @InjectMocks
     private UserController userController;
+    
+    @Mock
+    private BindingResult bindingResult;
 
     private User user;
 
@@ -57,15 +61,16 @@ class UserControllerTest {
 
     @Test
     void showAddForm_shouldReturnAddView() {
-        String view = userController.showAddForm(user);
+        String view = userController.showAddForm(model);
         assertEquals("user/add", view);
     }
 
     @Test
     void validate_shouldRedirectToList() {
+        when(bindingResult.hasErrors()).thenReturn(false);
         when(userService.save(any(User.class))).thenReturn(user);
 
-        String view = userController.validate(user);
+        String view = userController.validate(user, bindingResult, model);
         assertEquals("redirect:/user/list", view);
     }
 
@@ -81,9 +86,11 @@ class UserControllerTest {
 
     @Test
     void updateUser_shouldRedirectToList() {
+        when(bindingResult.hasErrors()).thenReturn(false);
         when(userService.update(1, user)).thenReturn(user);
 
-        String view = userController.updateUser(1, user);
+        String view = userController.updateUser(1, user, bindingResult);
+
         assertEquals("redirect:/user/list", view);
     }
 
