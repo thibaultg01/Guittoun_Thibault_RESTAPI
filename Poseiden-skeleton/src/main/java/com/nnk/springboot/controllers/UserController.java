@@ -38,12 +38,16 @@ public class UserController {
 	}
 
 	@GetMapping("/add")
-	public String showAddForm(User user) {
+	public String showAddForm(Model model) {
+		model.addAttribute("user", new User());
 		return "user/add";
 	}
 
 	@PostMapping("/validate")
-	public String validate(@ModelAttribute User user) {
+	public String validate(@ModelAttribute User user, BindingResult result,Model model) {
+		if (result.hasErrors()) {
+	        return "user/add";
+	    }
 		userService.save(user);
 		return "redirect:/user/list";
 	}
@@ -56,7 +60,10 @@ public class UserController {
 	}
 
 	@PostMapping("/update/{id}")
-	public String updateUser(@PathVariable("id") Integer id, @ModelAttribute User user) {
+	public String updateUser(@PathVariable("id") Integer id, @ModelAttribute User user , BindingResult result) {
+		if (result.hasErrors()) {
+	        return "user/update/"+id;
+	    }
 		userService.update(id, user);
 		return "redirect:/user/list";
 	}
