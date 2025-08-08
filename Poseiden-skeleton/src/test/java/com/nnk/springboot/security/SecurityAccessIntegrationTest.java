@@ -10,6 +10,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.nnk.springboot.model.User;
 import com.nnk.springboot.repositories.UserRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -29,43 +30,43 @@ class SecurityAccessIntegrationTest {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    
     @BeforeAll
     void setupUsers() {
-        userRepository.deleteAll();
+        if (!userRepository.existsByUsername("admintest")) {
+            var admin = new User();
+            admin.setUsername("admintest");
+            admin.setPassword(passwordEncoder.encode("Admin123!"));
+            admin.setFullname("Admin User");
+            admin.setRole("ADMIN");
+            userRepository.save(admin);
+        }
 
-        var admin = new com.nnk.springboot.model.User();
-        admin.setUsername("admin");
-        admin.setPassword(passwordEncoder.encode("Admin123!"));
-        admin.setFullname("Admin User");
-        admin.setRole("ADMIN");
-
-        var user = new com.nnk.springboot.model.User();
-        user.setUsername("user");
-        user.setPassword(passwordEncoder.encode("User123!"));
-        user.setFullname("Normal User");
-        user.setRole("USER");
-
-        userRepository.save(admin);
-        userRepository.save(user);
+        if (!userRepository.existsByUsername("usertest")) {
+            var user = new User();
+            user.setUsername("usertest");
+            user.setPassword(passwordEncoder.encode("User123!"));
+            user.setFullname("Normal User");
+            user.setRole("USER");
+            userRepository.save(user);
+        }
     }
 
     @Test
-    @WithUserDetails("admin")
+    @WithUserDetails("admintest")
     void adminShouldAccessUserList() throws Exception {
         mockMvc.perform(get("/user/list"))
                .andExpect(status().isOk());
     }
 
     @Test
-    @WithUserDetails("user")
+    @WithUserDetails("usertest")
     void userShouldNotAccessUserList() throws Exception {
         mockMvc.perform(get("/user/list"))
                .andExpect(status().isForbidden());
     }
 
     @Test
-    @WithUserDetails("user")
+    @WithUserDetails("usertest")
     void userShouldAccessBidList() throws Exception {
         mockMvc.perform(get("/bidList/list"))
                .andExpect(status().isOk());
@@ -85,7 +86,7 @@ class SecurityAccessIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = "USER")
+    @WithMockUser(username = "usertest", roles = "USER")
     void userShouldNotAccessAdminPage() throws Exception {
         mockMvc.perform(get("/user/list"))
                .andExpect(status().isForbidden());

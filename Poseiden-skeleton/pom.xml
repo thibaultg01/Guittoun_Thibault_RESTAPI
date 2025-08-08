@@ -94,6 +94,19 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-javadoc-plugin</artifactId>
+      <version>3.5.0</version>
+      <executions>
+        <execution>
+          <id>attach-javadocs</id>
+          <goals>
+            <goal>jar</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
 			 <!-- Plugin JaCoCo -->
     <plugin>
       <groupId>org.jacoco</groupId>
@@ -102,6 +115,7 @@
       <executions>
         <!-- Ajout de l’agent JaCoCo pendant la phase test -->
         <execution>
+        <id>prepare-agent</id>
           <goals>
             <goal>prepare-agent</goal>
           </goals>
